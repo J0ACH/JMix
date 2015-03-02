@@ -16,7 +16,7 @@ JMix_channel{
 
 	var chnlFrame, originX, originY;
 
-	var colBack, colFront, colActive;
+	var colBack, colFront, colActive, colChange;
 	var fontBig, fontSmall;
 	var lastObjY;
 
@@ -61,6 +61,7 @@ JMix_channel{
 		colBack = mixParent.colBack;
 		colFront = mixParent.colFront;
 		colActive = mixParent.colActive;
+		colChange = mixParent.colChange;
 		fontBig = mixParent.fontBig;
 		fontSmall = mixParent.fontSmall;
 		lastObjY = 0;
@@ -150,6 +151,58 @@ JMix_channel{
 			lastObjY = lastObjY + this.efx(i).dimension;
 		};
 	}
+
+	unmute {
+		if(buttMute.value==0) {
+			cb_fader_mute.value = 1;
+			buttMute.value = 1;
+		};
+		^("JMix channel " ++ id ++ " unmute");
+	}
+	mute {
+		if(buttMute.value==1) {
+			cb_fader_mute.value = 0;
+			buttMute.value = 0;
+
+		};
+		^("JMix channel " ++ id ++ " mute");
+	}
+
+	fade{|val, time|
+		var nwSynth;
+		var tempStep;
+		var rout;
+
+		nwSynth = Synth(mixParent.mixSynthDef(2), [
+			\bus, cb_fader_amp,
+			\val, val,
+			\time, time],
+			faderSynth,\addBefore);
+
+		rout = Routine.new({
+			chnlFrame.background_(colChange);
+
+			(4*time).do({ arg t;
+				var newVal = cb_fader_amp.getnSynchronous;
+				// newVal.postln;
+				valAmp.value = newVal[0];
+				sliderAmp.value = newVal[0];
+				0.25.wait;
+			});
+
+			chnlFrame.background_(colBack);
+			valAmp.value = cb_fader_amp.getnSynchronous[0];
+			sliderAmp.value = cb_fader_amp.getnSynchronous[0];
+
+			"fadeAmpDone".postln;
+
+		});
+		AppClock.play(rout);
+
+		this.refreshMixWindow; // chyba, pokud neni okono aktivni
+	}
+
+	refreshMixWindow {	mixParent.refresh;	}
 
 	freeFqv{
 		fqv.kill // !!! nutne bez ";"

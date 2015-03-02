@@ -9,7 +9,7 @@ JMix_efx
 	var num_cBus;
 	var coll_NumBox, coll_cName, coll_cBus, coll_cSpec;
 
-	var isActive, coll_isChangeing;
+	var isActive;
 	var sizeY;
 
 	var efxButt;
@@ -49,7 +49,6 @@ JMix_efx
 		coll_cName = List.new(num_cBus);
 		coll_cSpec = List.new(num_cBus);
 		coll_NumBox = List.new(num_cBus);
-		coll_isChangeing = List.new(num_cBus);
 
 		controlsNames_sd.do{|name|
 			var metaD;
@@ -58,8 +57,7 @@ JMix_efx
 					coll_cBus.add(Bus.control(server, 1));
 					coll_cName.add(name);
 					coll_cSpec.add(this.getMetaData(name));
-					coll_isChangeing.add(false);
-				}
+									}
 			)
 		};
 	}
@@ -99,7 +97,7 @@ JMix_efx
 		colBack = parentCh.mixParent.colBack;
 		colFront = parentCh.mixParent.colFront;
 		colActive = parentCh.mixParent.colActive;
-		colChange = Color.new255(75,65,45);
+		colChange = parentCh.mixParent.colChange;
 		fontSmall = parentCh.mixParent.fontSmall;
 
 		efxFrame = UserView(parentCh.mixParent.frame,
@@ -201,17 +199,17 @@ JMix_efx
 		this.refreshMixWindow;
 	}
 
-	changeValue{|target, val|
+	value{|target, val|
 		coll_cBus[target].value = val;
 		coll_NumBox[target].value = val;
 
 		this.refreshMixWindow; // chyba, pokud neni okono aktivni
 	}
 
-	fadeValue{|target, val, time|
+	fade{|target, val, time|
 		var nwSynth;
 		var tempStep;
-		var r;
+		var rout;
 
 		nwSynth = Synth(parentCh.mixParent.mixSynthDef(2), [
 			\bus, coll_cBus[target],
@@ -221,7 +219,7 @@ JMix_efx
 
 		tempStep = coll_NumBox[target].controlSpec.step;
 
-		r = Routine.new({
+		rout = Routine.new({
 			efxFrame.background_(colChange);
 			coll_NumBox[target].controlSpec.step = 1;
 
@@ -237,7 +235,7 @@ JMix_efx
 			"fadeDone".postln;
 
 		});
-		AppClock.play(r);
+		AppClock.play(rout);
 
 		coll_NumBox[target].controlSpec.step = tempStep;
 		this.refreshMixWindow; // chyba, pokud neni okono aktivni

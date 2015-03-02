@@ -12,7 +12,7 @@ JMix {
 	var <win, mixFrame;
 
 	var <sizeXChnl, <sizeYChnl;
-	var <colBack, <colFront, <colActive;
+	var <colBack, <colFront, <colActive, <colChange;
 	var <fontBig, <fontSmall;
 
 	*new { |numChannels|
@@ -109,6 +109,7 @@ JMix {
 		colBack = Color.new255(30,30,30);
 		colFront = Color.new255(255,255,255);
 		colActive = Color.new255(200,50,50);
+		colChange = Color.new255(75,65,45);
 		fontBig = Font("Segoe UI", 7,true, isPointSize:true);
 		fontSmall = Font("Segoe UI", 6, isPointSize:true);
 
