@@ -171,7 +171,13 @@ JMix {
 		"JMix closed".postln;
 	}
 	free{
-		// JMix all clean
+		this.close;
+		numCh.do { |i|
+			this.channel(i).free;
+		};
+		masterSynth.free;
+		synG.free;
+		mixG.free;
 	}
 
 }

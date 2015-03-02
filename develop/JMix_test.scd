@@ -6,7 +6,8 @@ m.gui;
 m.printEfx;
 
 m.channel(1).addEfx(2);
-m.channel(1).efx(2).changeValue(0,8300);
+m.channel(1).efx(2).changeValue(0,8000);
+m.channel(1).efx(2).fadeValue(0,1000,10);
 m.channel(1).freeEfx(2);
 
 m.addEfx(1,2);
@@ -19,8 +20,7 @@ m.freeEfx(1,2);
 m.printMix;
 
 m.close;
-
-// m.free;
+m.free;
 
 (
 SynthDef(\testSin, {|out, gate = 1, freq, amp, sustain|
@@ -37,4 +37,3 @@ Pdef(\testSin,
 ).play(quant:1);
 )
 Pdef(\testSin).stop;
-

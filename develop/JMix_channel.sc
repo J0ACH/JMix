@@ -137,10 +137,8 @@ JMix_channel{
 	initGuiEfx{
 		lastObjY = chnlFrame.bounds.height + 5;
 		coll_Efx.size.do{|i|
-			// ("pred lastObjY :" ++ lastObjY).postln;
 			this.efx(i).initGui(lastObjY);
 			lastObjY = lastObjY + this.efx(i).dimension;
-			// ("this.efx(i).dimension :" ++ this.efx(i).dimension).postln;
 		};
 		this.refreshGuiEfx;
 	}
@@ -148,16 +146,18 @@ JMix_channel{
 	refreshGuiEfx{
 		lastObjY = chnlFrame.bounds.height + 5;
 		coll_Efx.size.do{|i|
-
 			this.efx(i).refreshGui(lastObjY);
 			lastObjY = lastObjY + this.efx(i).dimension;
-			// ("this.efx(i).dimension :" ++ this.efx(i).dimension).postln;
-			// ("po refresh lastObjY :" ++ lastObjY).postln;
 		};
 	}
 
 	freeFqv{
 		fqv.kill // !!! nutne bez ";"
+	}
+
+	free{
+		faderSynth.free;
+		chnlG.free;
 	}
 
 	audioBus { ^channel_aBus; }

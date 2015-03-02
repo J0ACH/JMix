@@ -9,14 +9,14 @@ JMix_efx
 	var num_cBus;
 	var coll_NumBox, coll_cName, coll_cBus, coll_cSpec;
 
-	var isActive;
+	var isActive, coll_isChangeing;
 	var sizeY;
 
 	var efxButt;
 
 	var efxFrame, originX, originY;
 
-	var colBack, colFront, colActive;
+	var colBack, colFront, colActive, colChange;
 	var fontSmall;
 
 	*new{ |parent, def|
@@ -49,6 +49,7 @@ JMix_efx
 		coll_cName = List.new(num_cBus);
 		coll_cSpec = List.new(num_cBus);
 		coll_NumBox = List.new(num_cBus);
+		coll_isChangeing = List.new(num_cBus);
 
 		controlsNames_sd.do{|name|
 			var metaD;
@@ -57,6 +58,7 @@ JMix_efx
 					coll_cBus.add(Bus.control(server, 1));
 					coll_cName.add(name);
 					coll_cSpec.add(this.getMetaData(name));
+					coll_isChangeing.add(false);
 				}
 			)
 		};
@@ -67,10 +69,8 @@ JMix_efx
 
 		if(desc.metadata.notNil) //have metadata
 		{
-			// ("SynthD : " ++ synthDef ++ " has metadata").postln;
 			if(desc.metadata[\specs].notNil) //have specs
 			{
-				// ("Collected metadata specs : " ++ name ++ " --- " ++ desc.metadata[\specs][name.asSymbol]).postln;
 				^desc.metadata[\specs][name.asSymbol];
 			}{
 				("
@@ -99,6 +99,7 @@ JMix_efx
 		colBack = parentCh.mixParent.colBack;
 		colFront = parentCh.mixParent.colFront;
 		colActive = parentCh.mixParent.colActive;
+		colChange = Color.new255(75,65,45);
 		fontSmall = parentCh.mixParent.fontSmall;
 
 		efxFrame = UserView(parentCh.mixParent.frame,
@@ -166,6 +167,8 @@ JMix_efx
 		efxFrame.resizeTo(efxFrame.bounds.width, sizeY + 5);
 
 		efxButt.bounds_(Rect(5, 5, efxFrame.bounds.width-10, 15));
+
+
 	}
 
 	add{
@@ -205,16 +208,38 @@ JMix_efx
 		this.refreshMixWindow; // chyba, pokud neni okono aktivni
 	}
 
-	changeValue2{|target, val, time|
+	fadeValue{|target, val, time|
 		var nwSynth;
+		var tempStep;
+		var r;
+
 		nwSynth = Synth(parentCh.mixParent.mixSynthDef(2), [
 			\bus, coll_cBus[target],
 			\val, val,
 			\time, time],
 			parentCh.faderSynth,\addBefore);
 
-		coll_NumBox[target].value = val;
+		tempStep = coll_NumBox[target].controlSpec.step;
 
+		r = Routine.new({
+			efxFrame.background_(colChange);
+			coll_NumBox[target].controlSpec.step = 1;
+
+			(4*time).do({ arg t;
+				var newVal = coll_cBus[target].getnSynchronous;
+				// newVal.postln;
+				coll_NumBox[target].value = newVal[0];
+				0.25.wait;
+			});
+
+			efxFrame.background_(colBack);
+			coll_NumBox[target].value = coll_cBus[target].getnSynchronous[0];
+			"fadeDone".postln;
+
+		});
+		AppClock.play(r);
+
+		coll_NumBox[target].controlSpec.step = tempStep;
 		this.refreshMixWindow; // chyba, pokud neni okono aktivni
 	}
 
