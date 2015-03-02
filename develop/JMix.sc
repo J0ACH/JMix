@@ -1,5 +1,5 @@
 JMix {
-	classvar version = 0.14;
+	classvar version = 0.15;
 	classvar server;
 
 	classvar mixSDef, efxSDef;
@@ -112,7 +112,7 @@ JMix {
 		fontBig = Font("Segoe UI", 7,true, isPointSize:true);
 		fontSmall = Font("Segoe UI", 6, isPointSize:true);
 
-		win = Window.new("ja_Mixer v"++version, Rect(900,sizeYChnl-50,15+((sizeXChnl+5)*numCh),sizeYChnl+10))
+		win = Window.new("JMix v"++version, Rect(900,sizeYChnl-50,15+((sizeXChnl+5)*numCh),sizeYChnl+10))
 		.alpha_(0.95)
 		.alwaysOnTop_(true)
 		.background_(colBack)

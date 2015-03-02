@@ -16,6 +16,8 @@ m.freeEfx(1,0);
 m.freeEfx(1,1);
 m.freeEfx(1,2);
 
+m.printMix;
+
 m.close;
 
 // m.free;

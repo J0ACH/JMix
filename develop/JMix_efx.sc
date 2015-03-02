@@ -1,6 +1,6 @@
 JMix_efx
 {
-	classvar version = 0.14;
+	classvar version = 0.15;
 	classvar server;
 	var parentCh;
 	var id;
@@ -199,11 +199,22 @@ JMix_efx
 	}
 
 	changeValue{|target, val|
-		// coll_NumBox
-		// coll_cName
 		coll_cBus[target].value = val;
 		coll_NumBox[target].value = val;
-		// coll_cBus[i].value
+
+		this.refreshMixWindow; // chyba, pokud neni okono aktivni
+	}
+
+	changeValue2{|target, val, time|
+		var nwSynth;
+		nwSynth = Synth(parentCh.mixParent.mixSynthDef(2), [
+			\bus, coll_cBus[target],
+			\val, val,
+			\time, time],
+			parentCh.faderSynth,\addBefore);
+
+		coll_NumBox[target].value = val;
+
 		this.refreshMixWindow; // chyba, pokud neni okono aktivni
 	}
 
