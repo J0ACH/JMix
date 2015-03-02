@@ -221,7 +221,7 @@ JMix_efx
 
 		rout = Routine.new({
 			efxFrame.background_(colChange);
-			coll_NumBox[target].controlSpec.step = 1;
+			coll_NumBox[target].controlSpec.step = 0.001;
 
 			(4*time).do({ arg t;
 				var newVal = coll_cBus[target].getnSynchronous;

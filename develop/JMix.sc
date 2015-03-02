@@ -21,7 +21,7 @@ JMix {
 
 	init { |xCh|
 		server = Server.default;
-		mixSDef = this.storeSynth(this.folderMix); // Mix_Fader = 0; Mix_Limiter = 1
+		mixSDef = this.storeSynth(this.folderMix); // Mix_Fader = 0; Mix_Limiter = 1; Mix_NewVal = 2
 		efxSDef = this.storeSynth(this.folderEfx);
 		numCh = xCh;
 		numEfx = efxSDef.size;
