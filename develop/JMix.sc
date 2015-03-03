@@ -4,7 +4,8 @@ JMix {
 
 	classvar mixSDef, efxSDef;
 	var numCh, <numEfx;
-	var <synG, mixG;
+	var jmixG, <masterG, synG;
+	var synG_nodeID;
 	var coll_Channels;
 
 	var masterSynth, master_aBus;
@@ -27,17 +28,63 @@ JMix {
 		numEfx = efxSDef.size;
 
 		server.waitForBoot{
-			synG = Group.new;
-			mixG = Group.new(addAction:\addToTail);
+			// here is problem with Ndef, ndef.free kill synG and playing doesnt continue
+
+			// g = Group.basicNew(s, 3000); // Create without sending
+			// s.sendBundle(nil, g.newMsg;)
+
+			jmixG = Group.new(addAction:\addToTail);
+			masterG = Group.new(jmixG, \addToTail);
+
+			// synG = this.inGroup; // add if Ndef kill this group
+			synG = Group.new(jmixG, \addToHead);
+			synG_nodeID = synG.nodeID;
 
 			master_aBus = Bus.audio(server, 2);
-			masterSynth = Synth(this.mixSynthDef(1),[\bus, master_aBus],mixG);
+			masterSynth = Synth(this.mixSynthDef(1),[\bus, master_aBus],masterG);
 
 			coll_Channels = List.new(numCh);
 			numCh.do { |i|
 				coll_Channels.add(this.addChannel(i));
 			};
 		}
+	}
+
+	inGroup{
+		// this works but with gap
+		// synG.free;
+		// synG = Group.new(jmixG, \addToHead);
+		/*
+		if(synG.notNil){
+		// ("synG.isRunning :" ++ synG.isRunning).postln;
+		("synG run").postln;
+		}
+		{
+		("synG nil").postln;
+		}
+		*/
+		var synG_ID;
+		(
+			try {
+				// synG_nodeID = synG.nodeID;
+				("synG nodeID :" ++ synG_nodeID).postln;
+
+				// } {|error| \caught.postln; error.dump }
+			}{|error|
+				("synG nodeID nil ").postln;
+				synG = Group.new(jmixG, \addToHead);
+				error.dump;
+			}
+		);
+
+
+		// synG = Group.basicNew(server, 999); // Create without sending
+		// server.sendBundle(nil, synG.newMsg;);
+
+
+		// ("new synG nodeID : " ++ synG.nodeID).postln;
+
+		^synG;
 	}
 
 	storeSynth {|dir, libname=\global, completionMsg, keepDef = true|
@@ -84,6 +131,9 @@ JMix {
 		// postf("list of prepared efx synth: %\n", "is", "test", pi.round(1e-4), (1..4));
 		^""; //
 	}
+
+
+
 
 	addChannel{|num|
 		var chnl;
@@ -178,7 +228,8 @@ JMix {
 		};
 		masterSynth.free;
 		synG.free;
-		mixG.free;
+		masterG.free;
+		jmixG.free;
 	}
 
 }

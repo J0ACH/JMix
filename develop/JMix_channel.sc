@@ -28,7 +28,7 @@ JMix_channel{
 		server = Server.default;
 		mixParent = mix;
 		id = nil;
-		chnlG = Group.new(mixParent.synG, \addAfter);
+		chnlG = Group.new(mixParent.masterG, \addBefore);
 
 		channel_aBus = Bus.audio(server, 2);
 		cb_fader_amp = Bus.control(server, 1).value_(0);
