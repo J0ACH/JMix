@@ -211,7 +211,7 @@ JMix_efx
 		var tempStep;
 		var rout;
 
-		nwSynth = Synth(parentCh.mixParent.mixSynthDef(2), [
+		nwSynth = Synth(parentCh.mixParent.mixSynthDef(3), [
 			\bus, coll_cBus[target],
 			\val, val,
 			\time, time],

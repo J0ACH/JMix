@@ -6,7 +6,7 @@ JMix_channel{
 
 	var chnlG, id;
 	var channel_aBus;
-	var <faderSynth;
+	var <faderSynth, flatSynth;
 	var cb_fader_amp, cb_fader_mute;
 
 	var coll_Efx;
@@ -30,9 +30,11 @@ JMix_channel{
 		id = nil;
 		chnlG = Group.new(mixParent.masterG, \addBefore);
 
-		channel_aBus = Bus.audio(server, 2);
+		channel_aBus = Bus.audio(server, 16);
 		cb_fader_amp = Bus.control(server, 1).value_(0);
 		cb_fader_mute = Bus.control(server, 1).value_(0);
+
+		flatSynth = Synth(mixParent.mixSynthDef(1), [ \bus, channel_aBus], chnlG, \addToHead);
 
 		faderSynth = Synth(mixParent.mixSynthDef(0), [
 			\in, channel_aBus,
@@ -97,6 +99,8 @@ JMix_channel{
 		fqv.inBus_(channel_aBus);
 		fqv.freqMode_(1);
 		fqv.background_(Color.black);
+		fqv.synth.moveAfter(faderSynth);
+		("fqv id : " ++ fqv.synth.nodeID).postln;
 
 		valAmp = NumberBox(chnlFrame, Rect(27, 23, 20, 15))
 		.normalColor_(colFront)
@@ -173,7 +177,7 @@ JMix_channel{
 		var tempStep;
 		var rout;
 
-		nwSynth = Synth(mixParent.mixSynthDef(2), [
+		nwSynth = Synth(mixParent.mixSynthDef(3), [
 			\bus, cb_fader_amp,
 			\val, val,
 			\time, time],

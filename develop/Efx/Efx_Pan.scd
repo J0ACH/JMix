@@ -4,7 +4,7 @@ SynthDef(\Efx_Pan, { |bus, freq, mult|
 	chR = tone[0];
 	chL = tone[1];
 	tone = chR + chL;
-	ReplaceOut.ar(bus,Pan2.ar(tone, SinOsc.kr(freq, 0, mult)));
+	ReplaceOut.ar(bus,Pan2.ar(tone, SinOsc.kr(freq, 0, mult), 1));
 	},
 	metadata: (
 		specs: (

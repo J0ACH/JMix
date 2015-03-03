@@ -1,3 +1,6 @@
 SynthDef(\Mix_Fader, { | in, out, amp, mute |
-	Out.ar(out, In.ar(in, 2) * amp * mute)
+	var numCh, tone;
+	numCh = in.numChannels;
+	tone = In.ar(in, numCh);
+	Out.ar(out, Splay.ar(tone * amp * mute),0)
 });

@@ -21,8 +21,9 @@ JMix {
 	}
 
 	init { |xCh|
+
 		server = Server.default;
-		mixSDef = this.storeSynth(this.folderMix); // Mix_Fader = 0; Mix_Limiter = 1; Mix_NewVal = 2
+		mixSDef = this.storeSynth(this.folderMix); // Mix_Fader = 0; Mix_Limiter = 2; Mix_NewVal = 3
 		efxSDef = this.storeSynth(this.folderEfx);
 		numCh = xCh;
 		numEfx = efxSDef.size;
@@ -30,60 +31,44 @@ JMix {
 		server.waitForBoot{
 			// here is problem with Ndef, ndef.free kill synG and playing doesnt continue
 
-			// g = Group.basicNew(s, 3000); // Create without sending
-			// s.sendBundle(nil, g.newMsg;)
-
 			jmixG = Group.new(addAction:\addToTail);
 			masterG = Group.new(jmixG, \addToTail);
 
-			// synG = this.inGroup; // add if Ndef kill this group
-			synG = Group.new(jmixG, \addToHead);
-			synG_nodeID = synG.nodeID;
+			synG = this.inGroup; // add if Ndef kill this group
+			// synG = Group.new(jmixG, \addToHead);
+			// synG_nodeID = synG.nodeID;
 
 			master_aBus = Bus.audio(server, 2);
-			masterSynth = Synth(this.mixSynthDef(1),[\bus, master_aBus],masterG);
+			masterSynth = Synth(this.mixSynthDef(2),[\bus, master_aBus],masterG);
 
 			coll_Channels = List.new(numCh);
 			numCh.do { |i|
 				coll_Channels.add(this.addChannel(i));
 			};
-		}
+		};
 	}
 
 	inGroup{
 		// this works but with gap
-		// synG.free;
-		// synG = Group.new(jmixG, \addToHead);
+		// synG.free; synG = Group.new(jmixG, \addToHead);
+
+		// this works too, smaller glitch
+		synG = Group.basicNew(server, 999); // Create without sending
+		server.sendBundle(nil, synG.newMsg(jmixG, \addToHead););
+
+		// best option, check if exist nodeID by try, how???
 		/*
-		if(synG.notNil){
-		// ("synG.isRunning :" ++ synG.isRunning).postln;
-		("synG run").postln;
+		try {
+		if(synG.notNil) {
+		("synG nodeID :" ++ synG.nodeID).postln;
+		};
+		// } {|error| \caught.postln; error.dump }
+		}{|error|
+		("new synG").postln;
+		synG = Group.new(jmixG, \addToHead);
 		}
-		{
-		("synG nil").postln;
-		}
-		*/
-		var synG_ID;
-		(
-			try {
-				// synG_nodeID = synG.nodeID;
-				("synG nodeID :" ++ synG_nodeID).postln;
-
-				// } {|error| \caught.postln; error.dump }
-			}{|error|
-				("synG nodeID nil ").postln;
-				synG = Group.new(jmixG, \addToHead);
-				error.dump;
-			}
 		);
-
-
-		// synG = Group.basicNew(server, 999); // Create without sending
-		// server.sendBundle(nil, synG.newMsg;);
-
-
-		// ("new synG nodeID : " ++ synG.nodeID).postln;
-
+		*/
 		^synG;
 	}
 
@@ -184,8 +169,6 @@ JMix {
 			this.channel(i).initGui;
 			this.channel(i).initGuiEfx;
 		};
-
-
 	}
 
 	refresh {
@@ -232,6 +215,13 @@ JMix {
 		jmixG.free;
 	}
 
+	/*
+	// protection againg force crtl+. stop
+	cmdPeriod{
+	// CmdPeriod.add(function)
+	this.init(numCh);
+	}
+	*/
 }
 
 
