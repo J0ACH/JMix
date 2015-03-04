@@ -1,6 +1,6 @@
 JMix_efx
 {
-	classvar version = 0.17;
+	classvar version = 0.16;
 	classvar server;
 	var parentCh;
 	var id;
@@ -174,7 +174,7 @@ JMix_efx
 			efxSynth = Synth(synthDef, [
 				\bus, parentCh.audioEfxBus,
 				\out, parentCh.audioEfxBus ],
-				parentCh.faderSynth, \addBefore);
+				parentCh.flatSynth, \addAfter);
 			num_cBus.do{|i|
 				efxSynth.set(coll_cName[i],coll_cBus[i].asMap);
 				sizeY = sizeY + 20;

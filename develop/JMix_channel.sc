@@ -1,12 +1,12 @@
 JMix_channel{
-	classvar version = 0.17;
+	classvar version = 0.16;
 	classvar server;
 
 	var <mixParent;
 
 	var chnlG, id;
 	var channel_aBus, channel_efx_aBus;
-	var <faderSynth, flatSynth;
+	var <faderSynth, <flatSynth;
 	var cb_fader_amp, cb_fader_mute;
 
 	var coll_Efx;
@@ -35,13 +35,16 @@ JMix_channel{
 		cb_fader_amp = Bus.control(server, 1).value_(0);
 		cb_fader_mute = Bus.control(server, 1).value_(0);
 
-		flatSynth = Synth(\Mix_Flatten2Chnl, [ \in, channel_aBus, \out, channel_efx_aBus], chnlG, \addToHead);
+		flatSynth = Synth(\Mix_Flatten2Chnl, [
+			\in, channel_aBus,
+			\out, channel_efx_aBus
+		], chnlG, \addToHead);
 
 		faderSynth = Synth(\Mix_Fader, [
 			\in, channel_efx_aBus,
 			\out, mixParent.audioBus,
 			\amp, cb_fader_amp.asMap,
-			\mute, cb_fader_mute.asMap,
+			\mute, cb_fader_mute.asMap
 		], chnlG,\addToTail);
 	}
 
@@ -97,11 +100,11 @@ JMix_channel{
 
 		fqv = FreqScopeView(chnlFrame, Rect(5,45, chnlFrame.bounds.width-22,80));
 		fqv.active_(true);
-		fqv.inBus_(channel_aBus);
+		fqv.inBus_(channel_efx_aBus);
 		fqv.freqMode_(1);
 		fqv.background_(Color.black);
-		fqv.synth.moveAfter(faderSynth);
-		("fqv id : " ++ fqv.synth.nodeID).postln;
+		fqv.synth.moveBefore(faderSynth);
+		// ("fqv id : " ++ fqv.synth.nodeID).postln;
 
 		valAmp = NumberBox(chnlFrame, Rect(27, 23, 20, 15))
 		.normalColor_(colFront)
