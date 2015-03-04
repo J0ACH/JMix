@@ -108,6 +108,13 @@ JMix {
 		SynthDef(\Mix_NewVal, { | bus, val, time |
 			ReplaceOut.kr(bus, EnvGen.kr(Env([In.kr(bus), val], [time], \sin), doneAction: 2))
 		}).add;
+
+		SynthDef(\Mix_Flatten2Chnl, { | inBus outBus |
+			var numCh, tone, busStereo;
+			numCh = inBus.numChannels;
+			tone = Splay.ar(In.ar(inBus, numCh),0);
+			Out.ar(outBus, tone);
+		}).add;
 	}
 
 	printEfx{

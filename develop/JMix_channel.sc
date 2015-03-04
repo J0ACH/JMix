@@ -5,7 +5,7 @@ JMix_channel{
 	var <mixParent;
 
 	var chnlG, id;
-	var channel_aBus;
+	var channel_aBus, channel_efx_aBus;
 	var <faderSynth, flatSynth;
 	var cb_fader_amp, cb_fader_mute;
 
@@ -31,11 +31,14 @@ JMix_channel{
 		chnlG = Group.new(mixParent.masterG, \addBefore);
 
 		channel_aBus = Bus.audio(server, 16);
+		channel_efx_aBus = Bus.audio(server, 2);
 		cb_fader_amp = Bus.control(server, 1).value_(0);
 		cb_fader_mute = Bus.control(server, 1).value_(0);
 
+		flatSynth = Synth(\Mix_Flatten2Chnl, [ \in, channel_aBus, \out, channel_efx_aBus], chnlG, \addToHead);
+
 		faderSynth = Synth(\Mix_Fader, [
-			\in, channel_aBus,
+			\in, channel_efx_aBus,
 			\out, mixParent.audioBus,
 			\amp, cb_fader_amp.asMap,
 			\mute, cb_fader_mute.asMap,
@@ -216,6 +219,7 @@ JMix_channel{
 	}
 
 	audioBus { ^channel_aBus; }
+	audioEfxBus { ^channel_efx_aBus; }
 
 	effects{ ^coll_Efx; }
 

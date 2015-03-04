@@ -57,7 +57,7 @@ JMix_efx
 					coll_cBus.add(Bus.control(server, 1));
 					coll_cName.add(name);
 					coll_cSpec.add(this.getMetaData(name));
-									}
+				}
 			)
 		};
 	}
@@ -172,8 +172,8 @@ JMix_efx
 	add{
 		if(isActive == false){
 			efxSynth = Synth(synthDef, [
-				\bus, parentCh.audioBus,
-				\out, parentCh.audioBus ],
+				\bus, parentCh.audioEfxBus,
+				\out, parentCh.audioEfxBus ],
 				parentCh.faderSynth, \addBefore);
 			num_cBus.do{|i|
 				efxSynth.set(coll_cName[i],coll_cBus[i].asMap);
