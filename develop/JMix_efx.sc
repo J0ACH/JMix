@@ -1,6 +1,6 @@
 JMix_efx
 {
-	classvar version = 0.16;
+	classvar version = 0.17;
 	classvar server;
 	var parentCh;
 	var id;
@@ -211,7 +211,7 @@ JMix_efx
 		var tempStep;
 		var rout;
 
-		nwSynth = Synth(parentCh.mixParent.mixSynthDef(3), [
+		nwSynth = Synth(\Mix_NewVal, [
 			\bus, coll_cBus[target],
 			\val, val,
 			\time, time],

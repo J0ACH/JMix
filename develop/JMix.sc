@@ -1,8 +1,8 @@
 JMix {
-	classvar version = 0.16;
+	classvar version = 0.17;
 	classvar server;
 
-	classvar mixSDef, efxSDef;
+	classvar efxSDef;
 	var numCh, <numEfx;
 	var jmixG, <masterG, synG;
 	var synG_nodeID;
@@ -23,7 +23,7 @@ JMix {
 	init { |xCh|
 
 		server = Server.default;
-		mixSDef = this.storeSynth(this.folderMix); // Mix_Fader = 0; Mix_Limiter = 2; Mix_NewVal = 3
+		this.storeMixSynth;
 		efxSDef = this.storeSynth(this.folderEfx);
 		numCh = xCh;
 		numEfx = efxSDef.size;
@@ -35,11 +35,9 @@ JMix {
 			masterG = Group.new(jmixG, \addToTail);
 
 			synG = this.inGroup; // add if Ndef kill this group
-			// synG = Group.new(jmixG, \addToHead);
-			// synG_nodeID = synG.nodeID;
 
 			master_aBus = Bus.audio(server, 2);
-			masterSynth = Synth(this.mixSynthDef(2),[\bus, master_aBus],masterG);
+			masterSynth = Synth(\Mix_Limiter,[\bus, master_aBus],masterG);
 
 			coll_Channels = List.new(numCh);
 			numCh.do { |i|
@@ -94,7 +92,23 @@ JMix {
 		^list;
 	}
 
-	printMix{^("list of prepared efx synth: " ++ mixSDef);}
+	storeMixSynth
+	{
+		SynthDef(\Mix_Limiter, { | bus |
+			Out.ar(0, Limiter.ar(In.ar(bus,2),0.95));
+		}).add;
+
+		SynthDef(\Mix_Fader, { | in, out, amp, mute |
+			var numCh, tone;
+			numCh = in.numChannels;
+			tone = In.ar(in, numCh);
+			Out.ar(out, Splay.ar(tone * amp * mute),0)
+		}).add;
+
+		SynthDef(\Mix_NewVal, { | bus, val, time |
+			ReplaceOut.kr(bus, EnvGen.kr(Env([In.kr(bus), val], [time], \sin), doneAction: 2))
+		}).add;
+	}
 
 	printEfx{
 
@@ -183,16 +197,13 @@ JMix {
 		};
 	}
 
-	mixSynthDef {|num| ^mixSDef[num];}
 	efxSynthDef {|num| ^efxSDef[num];}
-
 	channel{ |num| ^coll_Channels[num]; }
 
 	audioBus { ^master_aBus; }
 	ch{ |num| ^coll_Channels[num].audioBus; }
 
 	folderRoot{ ^Platform.systemExtensionDir ++ "\/JMix"; }
-	folderMix{ ^this.folderRoot ++ "\/Mix"; }
 	folderEfx{ ^this.folderRoot ++ "\/Efx"; }
 
 	frame { ^mixFrame; }

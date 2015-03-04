@@ -1,5 +1,5 @@
 JMix_channel{
-	classvar version = 0.16;
+	classvar version = 0.17;
 	classvar server;
 
 	var <mixParent;
@@ -34,9 +34,7 @@ JMix_channel{
 		cb_fader_amp = Bus.control(server, 1).value_(0);
 		cb_fader_mute = Bus.control(server, 1).value_(0);
 
-		flatSynth = Synth(mixParent.mixSynthDef(1), [ \bus, channel_aBus], chnlG, \addToHead);
-
-		faderSynth = Synth(mixParent.mixSynthDef(0), [
+		faderSynth = Synth(\Mix_Fader, [
 			\in, channel_aBus,
 			\out, mixParent.audioBus,
 			\amp, cb_fader_amp.asMap,
@@ -177,7 +175,7 @@ JMix_channel{
 		var tempStep;
 		var rout;
 
-		nwSynth = Synth(mixParent.mixSynthDef(3), [
+		nwSynth = Synth(\Mix_NewVal, [
 			\bus, cb_fader_amp,
 			\val, val,
 			\time, time],
