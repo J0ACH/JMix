@@ -32,9 +32,8 @@ JMix {
 
 		SynthDef(\Mix_Fader, { | in, out, amp, mute |
 			var numCh, tone;
-			numCh = in.numChannels;
-			tone = In.ar(in, numCh);
-			Out.ar(out, Splay.ar(tone * amp * mute),0)
+			tone = In.ar(in, 2);
+			Out.ar(out, tone * amp * mute);
 		}).add;
 
 		SynthDef(\Mix_NewVal, { | bus, val, time |
